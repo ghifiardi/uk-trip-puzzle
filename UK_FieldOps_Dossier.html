@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UK Field Operations 2026 — Classified Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Spectral:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --paper: #f0e6d2;
+    --paper-dark: #d9cdb0;
+    --paper-darker: #b8a98a;
+    --ink: #1a1a1a;
+    --ink-faded: #3a3a3a;
+    --crimson: #8b1e1e;
+    --navy: #0e2c4d;
+    --gold: #b8862e;
+    --rust: #a04020;
+    --green-classified: #2d5028;
+  }
+
+  body {
+    font-family: 'Spectral', Georgia, serif;
+    background: #1a1612;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(184, 134, 46, 0.05) 0%, transparent 60%),
+      radial-gradient(circle at 80% 70%, rgba(139, 30, 30, 0.05) 0%, transparent 60%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 920px; margin: 0 auto; }
+
+  /* Status bar */
+  .status-bar {
+    background: #0a0a0a;
+    color: var(--paper);
+    border: 1px solid var(--gold);
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .status-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--green-classified);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .xp-counter {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* Pages - dossier file feel */
+  .page {
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(26, 26, 26, 0.04) 24px, rgba(26, 26, 26, 0.04) 25px),
+      radial-gradient(circle at 10% 0%, rgba(139, 30, 30, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(184, 134, 46, 0.08) 0%, transparent 50%);
+    border: 1px solid var(--ink);
+    box-shadow:
+      0 0 0 1px var(--paper-darker),
+      0 0 0 8px var(--paper),
+      0 0 0 9px var(--ink),
+      0 20px 50px rgba(0,0,0,0.5);
+    padding: 40px;
+    display: none;
+    position: relative;
+    margin-bottom: 30px;
+  }
+  .page.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* File header */
+  .file-header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .file-no {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--ink-faded);
+  }
+  .classified-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--crimson);
+    border: 1px solid var(--crimson);
+    padding: 3px 10px;
+    letter-spacing: 2px;
+  }
+
+  h1 {
+    font-family: 'Special Elite', 'Courier New', monospace;
+    font-size: clamp(28px, 4.5vw, 40px);
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: 'Special Elite', monospace;
+    font-size: clamp(20px, 3vw, 26px);
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+  h3 {
+    font-family: 'Special Elite', monospace;
+    font-size: 16px;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 18px 0 10px;
+  }
+  .deck {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-faded);
+    margin-bottom: 24px;
+    border-left: 3px solid var(--crimson);
+    padding-left: 14px;
+  }
+  p { line-height: 1.65; margin-bottom: 14px; font-size: 15px; }
+
+  /* Rubber stamp - decorative */
+  .rubber-stamp {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    transform: rotate(12deg);
+    border: 3px solid var(--crimson);
+    color: var(--crimson);
+    padding: 8px 18px;
+    font-family: 'Special Elite', monospace;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  /* Briefing box */
+  .briefing {
+    background: rgba(14, 44, 77, 0.08);
+    border: 1px solid var(--navy);
+    border-left: 4px solid var(--navy);
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .briefing strong { color: var(--navy); }
+
+  /* Inputs */
+  input[type="text"], input[type="number"] {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    background: transparent;
+    padding: 8px 4px;
+    width: 100%;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--crimson);
+  }
+
+  /* Buttons */
+  button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 12px 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    border: 1px solid var(--ink);
+  }
+  button:hover { background: var(--crimson); border-color: var(--crimson); }
+  button.ghost { background: transparent; color: var(--ink); }
+  button.ghost:hover { background: var(--ink); color: var(--paper); }
+  button:disabled {
+    background: var(--paper-darker);
+    color: var(--ink-faded);
+    border-color: var(--paper-darker);
+    cursor: not-allowed;
+  }
+  button:disabled:hover { background: var(--paper-darker); color: var(--ink-faded); }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--ink-faded);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Menu */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .menu-card {
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .menu-card:hover {
+    background: #faf3df;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 0 var(--ink);
+  }
+  .menu-card.complete {
+    background: rgba(45, 80, 40, 0.08);
+    border-color: var(--green-classified);
+  }
+  .menu-card.complete::after {
+    content: 'COMPLETE';
+    position: absolute;
+    top: 12px; right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--green-classified);
+    border: 1px solid var(--green-classified);
+    padding: 2px 8px;
+    letter-spacing: 1px;
+  }
+  .menu-card .op-no {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--crimson);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .menu-card .op-title {
+    font-family: 'Special Elite', monospace;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .menu-card .op-desc {
+    font-size: 13px;
+    color: var(--ink-faded);
+    line-height: 1.5;
+  }
+  .menu-card .op-xp {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  /* Cipher cards */
+  .cipher-card {
+    background: rgba(255, 255, 240, 0.6);
+    border: 1px dashed var(--ink);
+    padding: 20px;
+    margin: 18px 0;
+  }
+  .cipher-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(18px, 3vw, 24px);
+    letter-spacing: 4px;
+    text-align: center;
+    padding: 20px;
+    background: #1a1a1a;
+    color: var(--gold);
+    margin: 16px 0;
+    overflow-x: auto;
+    word-break: break-all;
+  }
+  .cipher-hint {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    color: var(--ink-faded);
+    margin: 10px 0;
+    font-size: 14px;
+  }
+  .answer-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    margin-top: 12px;
+  }
+  .answer-row input { flex: 1; }
+  .answer-feedback {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    display: none;
+  }
+  .answer-feedback.correct {
+    display: block;
+    background: rgba(45, 80, 40, 0.15);
+    color: var(--green-classified);
+    border-left: 3px solid var(--green-classified);
+  }
+  .answer-feedback.wrong {
+    display: block;
+    background: rgba(139, 30, 30, 0.1);
+    color: var(--crimson);
+    border-left: 3px solid var(--crimson);
+  }
+
+  /* Quiz */
+  .quiz-card {
+    background: rgba(255, 255, 240, 0.5);
+    border: 1px solid var(--ink);
+    padding: 24px;
+    margin: 18px 0;
+  }
+  .quiz-q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--crimson);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .quiz-q {
+    font-family: 'Special Elite', monospace;
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: 18px;
+  }
+  .quiz-opts { display: grid; gap: 8px; }
+  .quiz-opt {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Spectral', serif;
+    font-size: 15px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    transition: all 0.15s;
+  }
+  .quiz-opt:hover { background: var(--ink); color: var(--paper); }
+  .quiz-opt.correct { background: var(--green-classified); color: var(--paper); border-color: var(--green-classified); }
+  .quiz-opt.wrong { background: var(--crimson); color: var(--paper); border-color: var(--crimson); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-fact {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(184, 134, 46, 0.12);
+    border-left: 3px solid var(--gold);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.6;
+    display: none;
+  }
+  .quiz-fact.show { display: block; }
+
+  /* Math problems */
+  .math-problem {
+    background: rgba(255,255,240,0.5);
+    border: 1px solid var(--ink);
+    padding: 24px;
+    margin: 18px 0;
+  }
+  .math-context {
+    font-size: 14px;
+    color: var(--ink-faded);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .math-q {
+    font-family: 'Special Elite', monospace;
+    font-size: 17px;
+    margin-bottom: 16px;
+  }
+  .math-answer-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .math-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--ink-faded);
+    white-space: nowrap;
+  }
+
+  /* Scavenger hunt */
+  .city-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 20px 0;
+    border-bottom: 2px solid var(--ink);
+    flex-wrap: wrap;
+  }
+  .city-tab {
+    background: transparent;
+    border: 1px solid var(--ink);
+    border-bottom: none;
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink);
+    position: relative;
+    bottom: -2px;
+  }
+  .city-tab.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .city-tab .tab-count {
+    color: var(--gold);
+    margin-left: 6px;
+  }
+  .city-tab.active .tab-count {
+    color: var(--gold);
+  }
+
+  .item-list { margin-top: 20px; }
+  .hunt-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px;
+    border-bottom: 1px dashed var(--ink-faded);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .hunt-item:hover { background: rgba(184, 134, 46, 0.08); }
+  .hunt-item.done {
+    opacity: 0.55;
+  }
+  .hunt-item.done .item-label {
+    text-decoration: line-through;
+  }
+  .hunt-check {
+    width: 22px; height: 22px;
+    border: 2px solid var(--ink);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Special Elite', monospace;
+    font-size: 18px;
+    color: var(--crimson);
+    background: var(--paper);
+  }
+  .hunt-item.done .hunt-check::after { content: '✗'; }
+  .item-body { flex: 1; }
+  .item-label {
+    font-family: 'Spectral', serif;
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  .item-note {
+    font-size: 12px;
+    color: var(--ink-faded);
+    font-style: italic;
+    margin-top: 2px;
+  }
+  .item-points {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 700;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .city-stats {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .city-stats .stat-gold { color: var(--gold); font-weight: 700; font-size: 16px; }
+
+  /* ID Card / certificate */
+  .id-card {
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 0;
+    margin: 20px 0;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  .id-card-header {
+    background: var(--navy);
+    color: var(--paper);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .id-card-body {
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 600px) { .id-card-body { grid-template-columns: 1fr; text-align: center; } }
+  .id-photo {
+    width: 100px; height: 130px;
+    background: var(--paper-dark);
+    border: 1px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-faded);
+    text-align: center;
+    line-height: 1.3;
+    background-image: linear-gradient(135deg, var(--paper-dark) 25%, transparent 25%), linear-gradient(225deg, var(--paper-dark) 25%, transparent 25%), linear-gradient(45deg, var(--paper-dark) 25%, transparent 25%), linear-gradient(315deg, var(--paper-dark) 25%, transparent 25%);
+    background-position: 6px 0, 6px 0, 0 0, 0 0;
+    background-size: 12px 12px;
+    background-repeat: repeat;
+  }
+  .id-field { margin-bottom: 12px; }
+  .id-field-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--ink-faded);
+    margin-bottom: 2px;
+  }
+  .id-field-value {
+    font-family: 'Special Elite', monospace;
+    font-size: 18px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 2px;
+  }
+  .id-rank {
+    background: var(--crimson);
+    color: var(--paper);
+    padding: 8px 16px;
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-top: 8px;
+  }
+  .id-card-footer {
+    background: var(--ink);
+    color: var(--paper-dark);
+    padding: 10px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .ops-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .ops-summary-card {
+    background: rgba(255,255,240,0.6);
+    border: 1px solid var(--ink);
+    padding: 14px;
+    text-align: center;
+  }
+  .ops-summary-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-faded);
+    margin-bottom: 6px;
+  }
+  .ops-summary-card .value {
+    font-family: 'Special Elite', monospace;
+    font-size: 22px;
+    color: var(--crimson);
+  }
+
+  /* Welcome */
+  .welcome-frame {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 40px;
+    margin: 20px 0;
+    text-align: center;
+    border: 4px double var(--gold);
+  }
+  .welcome-frame h1 { color: var(--gold); margin-bottom: 12px; }
+  .welcome-frame .deck { color: var(--paper-dark); border-color: var(--gold); }
+  .welcome-frame .deck { border-left: none; padding-left: 0; text-align: center; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .status-bar, .nav, button { display: none !important; }
+    .page { box-shadow: none; border: 2px solid var(--ink); }
+  }
+
+  /* Reveal helper */
+  details summary {
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--crimson);
+    padding: 8px 0;
+    user-select: none;
+  }
+  details[open] summary { margin-bottom: 8px; }
+
+  .small { font-size: 12px; color: var(--ink-faded); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span><span class="status-dot"></span>Operative Status: Active</span>
+    <span class="xp-counter" id="xpCounter">XP: 0 / 1000</span>
+  </div>
+
+  <!-- ============ PAGE: WELCOME ============ -->
+  <div class="page active" id="page-welcome">
+    <div class="rubber-stamp">EYES ONLY</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">FILE NO. UK-2026 / OPERATION HOMELAND</div>
+        <h1>Field Operations Dossier</h1>
+      </div>
+      <div class="classified-tag">CLASSIFIED</div>
+    </div>
+
+    <div class="welcome-frame">
+      <h1>UK 2026</h1>
+      <p class="deck">Cross-continent reconnaissance · 15 days · 6 missions</p>
+      <p style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gold); letter-spacing: 2px; margin-top: 20px;">
+        JKT → DXB → MAN → EDI → LON → DXB → JKT
+      </p>
+    </div>
+
+    <div class="briefing">
+      <strong>BRIEFING.</strong> You are about to deploy on a 15-day field operation across the United Kingdom. Your dossier contains six missions. The first five are intelligence work — ciphers, trivia, and field mathematics — to complete before departure. The sixth is a live scavenger operation you'll run during the trip itself, collecting evidence across every city you visit.
+    </div>
+
+    <p><strong>Mission scoring:</strong> earn XP across all operations. Reach <strong>500 XP</strong> for the rank of Field Agent. <strong>800 XP</strong> for Senior Operative. <strong>950+ XP</strong> for Master Explorer. Your final rank is printed on your ID card at the end.</p>
+
+    <h3>Operative Identification</h3>
+    <p class="small">Enter your codename below. This is the name that will appear on your final ID card.</p>
+    <input type="text" id="codeName" placeholder="ENTER CODENAME" maxlength="24">
+
+    <div class="nav">
+      <span class="small">Submit to begin Mission 01.</span>
+      <button onclick="beginOperation()">Authorize &amp; Deploy →</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: MENU ============ -->
+  <div class="page" id="page-menu">
+    <div class="rubber-stamp" id="menuRank">RECRUIT</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">OPERATIONS HUB</div>
+        <h1>Mission Selection</h1>
+      </div>
+      <div class="classified-tag" id="menuClassif">ACTIVE</div>
+    </div>
+
+    <p>Welcome, <strong id="agentName">OPERATIVE</strong>. Below are your six assigned missions. Complete in any order. Each grants XP toward your final rank.</p>
+
+    <div class="menu-grid" id="missionList"></div>
+
+    <div class="nav">
+      <span class="small">Progress is saved on this device.</span>
+      <button onclick="resetEverything()" class="ghost">Reset All Data</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: CIPHERS ============ -->
+  <div class="page" id="page-ciphers">
+    <div class="rubber-stamp">DECRYPT</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">MISSION 01 / CIPHER ANALYSIS</div>
+        <h1>Decryption Test</h1>
+      </div>
+      <div class="classified-tag">200 XP</div>
+    </div>
+    <p class="deck">Three encrypted location names. Decode all three.</p>
+
+    <div class="cipher-card">
+      <h3>Cipher α — Caesar Shift</h3>
+      <p>The Romans used this on military dispatches. Each letter shifts a fixed number of places back through the alphabet. <strong>Try shift of 3.</strong></p>
+      <div class="cipher-text">PDQFKHVWHU</div>
+      <p class="cipher-hint">Hint: It's a city where you'll spend 5 nights.</p>
+      <div class="answer-row">
+        <input type="text" id="cipherA" placeholder="DECODED CITY NAME">
+        <button onclick="checkCipher('A', 'MANCHESTER', 'cipherA', 'fbA')">Decrypt</button>
+      </div>
+      <div class="answer-feedback" id="fbA"></div>
+      <details>
+        <summary>▸ Decryption help</summary>
+        <p class="small">A Caesar shift of 3 means A→D, B→E, C→F... to decode, shift backwards: P→M, D→A, Q→N. The letters look unfamiliar — but they spell something you know.</p>
+      </details>
+    </div>
+
+    <div class="cipher-card">
+      <h3>Cipher β — Anagram</h3>
+      <p>An anagram rearranges the letters of a word into something else. All letters are still there — just scrambled.</p>
+      <div class="cipher-text">RUE OG BNDIH</div>
+      <p class="cipher-hint">Hint: Scotland's capital. Built on an ancient volcano.</p>
+      <div class="answer-row">
+        <input type="text" id="cipherB" placeholder="UNSCRAMBLED CITY NAME">
+        <button onclick="checkCipher('B', 'EDINBURGH', 'cipherB', 'fbB')">Decrypt</button>
+      </div>
+      <div class="answer-feedback" id="fbB"></div>
+    </div>
+
+    <div class="cipher-card">
+      <h3>Cipher γ — Cryptic Clue</h3>
+      <p>A British-style cryptic clue. Decode using context and wordplay.</p>
+      <div class="cipher-text" style="font-family: 'Special Elite', monospace; letter-spacing: 1px; font-size: 18px;">"Romans built me. I sit in steaming water. My name is also what you do every morning."</div>
+      <p class="cipher-hint">Hint: Day 13 destination. Day trip from London.</p>
+      <div class="answer-row">
+        <input type="text" id="cipherC" placeholder="CITY NAME">
+        <button onclick="checkCipher('C', 'BATH', 'cipherC', 'fbC')">Decrypt</button>
+      </div>
+      <div class="answer-feedback" id="fbC"></div>
+    </div>
+
+    <div class="nav">
+      <button onclick="goToPage('page-menu')" class="ghost">← Operations Hub</button>
+      <button onclick="completeMission('ciphers')" id="cipherDone" disabled>Submit Mission →</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: QUIZ ============ -->
+  <div class="page" id="page-quiz">
+    <div class="rubber-stamp">INTEL</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">MISSION 02 / INTELLIGENCE ASSESSMENT</div>
+        <h1>Field Knowledge Quiz</h1>
+      </div>
+      <div class="classified-tag">200 XP</div>
+    </div>
+    <p class="deck">Ten questions. Threshold for credit: 8 correct.</p>
+
+    <div id="quizContainer"></div>
+    <div class="nav" id="quizNav" style="display:none;">
+      <button onclick="goToPage('page-menu')" class="ghost">← Operations Hub</button>
+      <button onclick="resetQuiz()" id="quizRetryBtn" style="display:none;">Retake Test</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: MATH ============ -->
+  <div class="page" id="page-math">
+    <div class="rubber-stamp">CALC</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">MISSION 03 / FIELD MATHEMATICS</div>
+        <h1>Currency, Distance &amp; Time</h1>
+      </div>
+      <div class="classified-tag">150 XP</div>
+    </div>
+    <p class="deck">Five practical calculations a traveller actually needs to do.</p>
+
+    <div class="briefing">
+      <strong>REFERENCE.</strong> Use these approximate rates for all problems.<br>
+      • £1 GBP ≈ Rp 21,000 IDR<br>
+      • AED 1 ≈ Rp 4,500 IDR<br>
+      • Jakarta = GMT+7 (WIB) · Dubai = GMT+4 (GST) · UK summer = GMT+1 (BST)<br>
+      • Answers accepted within ±5% margin.
+    </div>
+
+    <div id="mathContainer"></div>
+
+    <div class="nav">
+      <button onclick="goToPage('page-menu')" class="ghost">← Operations Hub</button>
+      <button onclick="completeMission('math')" id="mathDone" disabled>Submit Mission →</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: ROUTE ============ -->
+  <div class="page" id="page-route">
+    <div class="rubber-stamp">ROUTE</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">MISSION 04 / ROUTE PLANNING</div>
+        <h1>Travel Order Reconstruction</h1>
+      </div>
+      <div class="classified-tag">100 XP</div>
+    </div>
+    <p class="deck">Place the nine destinations in the correct travel sequence.</p>
+
+    <div class="briefing">
+      <strong>INSTRUCTIONS.</strong> Click cities in the order you'll visit them. Includes day trips. Start from Jakarta and end with the last UK city before flying home.
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;" id="routeGrid">
+      <div>
+        <h3>Available</h3>
+        <div id="routeChoices" style="border: 1px solid var(--ink); padding: 10px; min-height: 360px; background: rgba(255,255,240,0.4);"></div>
+      </div>
+      <div>
+        <h3>Your Sequence</h3>
+        <div id="routeOrder" style="border: 1px solid var(--ink); padding: 10px; min-height: 360px; background: rgba(255,255,240,0.4);"></div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button onclick="buildRoute()" class="ghost">Reset</button>
+      <button onclick="checkRoute()" id="routeDone" disabled>Verify Route →</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: SCAVENGER HUNT ============ -->
+  <div class="page" id="page-hunt">
+    <div class="rubber-stamp" style="border-color: var(--green-classified); color: var(--green-classified);">FIELDWORK</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">MISSION 05 / FIELD OPERATIONS</div>
+        <h1>Evidence Collection</h1>
+      </div>
+      <div class="classified-tag">UP TO 350 XP</div>
+    </div>
+    <p class="deck">Active during travel. Mark items as you spot or photograph them across the trip.</p>
+
+    <div class="briefing">
+      <strong>FIELD INSTRUCTIONS.</strong> Open this dossier on your phone during the trip. Each item is worth XP — common spots are 5 XP, harder finds are 10-20 XP, rare sightings are 30+ XP. Targets above 200 XP unlock the <strong>Field Operative</strong> commendation on your ID card. Your progress is saved automatically.
+    </div>
+
+    <div class="city-tabs" id="cityTabs"></div>
+    <div id="huntContent"></div>
+
+    <div class="city-stats">
+      <span>City Total: <span class="stat-gold" id="cityXp">0</span> XP</span>
+      <span>Found: <span class="stat-gold" id="cityFound">0 / 0</span></span>
+      <span>Trip Total: <span class="stat-gold" id="huntTotal">0</span> XP</span>
+    </div>
+
+    <div class="nav">
+      <button onclick="goToPage('page-menu')" class="ghost">← Operations Hub</button>
+      <button onclick="completeMission('hunt')">Save &amp; Return →</button>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: ID CARD ============ -->
+  <div class="page" id="page-id">
+    <div class="rubber-stamp" style="border-color: var(--gold); color: var(--gold);">VERIFIED</div>
+    <div class="file-header">
+      <div>
+        <div class="file-no">FINAL DEBRIEF / MISSION COMPLETE</div>
+        <h1>Field Operative ID</h1>
+      </div>
+      <div class="classified-tag">DECLASSIFIED</div>
+    </div>
+
+    <div class="id-card">
+      <div class="id-card-header">
+        <span>UNITED KINGDOM / FIELD OPERATIONS</span>
+        <span id="idIssue">2026</span>
+      </div>
+      <div class="id-card-body">
+        <div class="id-photo">FIELD<br>OPERATIVE<br>PHOTO</div>
+        <div>
+          <div class="id-field">
+            <div class="id-field-label">Codename</div>
+            <div class="id-field-value" id="idName">—</div>
+          </div>
+          <div class="id-field">
+            <div class="id-field-label">Operation</div>
+            <div class="id-field-value">UK-2026 Homeland</div>
+          </div>
+          <div class="id-field">
+            <div class="id-field-label">Total XP</div>
+            <div class="id-field-value" id="idXp">0 / 1000</div>
+          </div>
+          <div class="id-rank" id="idRank">RECRUIT</div>
+        </div>
+      </div>
+      <div class="id-card-footer">VALID FOR ONE LIFETIME · UK MMXXVI</div>
+    </div>
+
+    <h3>Mission Summary</h3>
+    <div class="ops-summary" id="opsSummary"></div>
+
+    <div id="commendations" style="margin-top: 24px;"></div>
+
+    <div class="nav">
+      <button onclick="goToPage('page-menu')" class="ghost">← Operations Hub</button>
+      <button onclick="window.print()">🖨 Print ID</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============ STATE ============
+const SAVE_KEY = 'uk2026_dossier';
+let state = {
+  codeName: '',
+  xp: 0,
+  missions: { ciphers: 0, quiz: 0, math: 0, route: 0, hunt: 0 },
+  ciphers: { A: false, B: false, C: false },
+  hunt: {} // city -> { itemId: true }
+};
+
+function save() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function load() {
+  try {
+    const s = localStorage.getItem(SAVE_KEY);
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+}
+
+function resetEverything() {
+  if (!confirm('Reset all progress? This cannot be undone.')) return;
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  location.reload();
+}
+
+// ============ NAVIGATION & UTILITIES ============
+function goToPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getRank(xp) {
+  if (xp >= 950) return 'MASTER EXPLORER';
+  if (xp >= 800) return 'SENIOR OPERATIVE';
+  if (xp >= 500) return 'FIELD AGENT';
+  if (xp >= 200) return 'JUNIOR OPERATIVE';
+  return 'RECRUIT';
+}
+
+function updateXP() {
+  document.getElementById('xpCounter').textContent = `XP: ${state.xp} / 1000`;
+  const rank = getRank(state.xp);
+  document.getElementById('menuRank').textContent = rank;
+  save();
+}
+
+// ============ WELCOME ============
+function beginOperation() {
+  const v = document.getElementById('codeName').value.trim().toUpperCase();
+  if (!v) {
+    document.getElementById('codeName').focus();
+    return;
+  }
+  state.codeName = v;
+  save();
+  buildMenu();
+  goToPage('page-menu');
+}
+
+// ============ MENU ============
+const missions = [
+  { id: 'ciphers', no: '01', title: 'Decryption Test', desc: 'Crack three ciphers to reveal hidden destinations.', xp: 200, page: 'page-ciphers', setup: buildCiphers },
+  { id: 'quiz', no: '02', title: 'Intelligence Quiz', desc: 'Ten harder-than-it-looks questions on UK history, geography & culture.', xp: 200, page: 'page-quiz', setup: buildQuiz },
+  { id: 'math', no: '03', title: 'Field Mathematics', desc: 'Currency conversions, time-zone math, distance calculations.', xp: 150, page: 'page-math', setup: buildMath },
+  { id: 'route', no: '04', title: 'Route Reconstruction', desc: 'Order the cities of your 15-day journey correctly.', xp: 100, page: 'page-route', setup: buildRoute },
+  { id: 'hunt', no: '05', title: 'Scavenger Operation', desc: 'Active during travel — find and photograph 80+ items across all cities.', xp: 350, page: 'page-hunt', setup: buildHunt },
+  { id: 'debrief', no: '06', title: 'Final Debrief', desc: 'Generate your Field Operative ID with final rank.', xp: 0, page: 'page-id', setup: buildIdCard }
+];
+
+function buildMenu() {
+  document.getElementById('agentName').textContent = state.codeName || 'OPERATIVE';
+  const list = document.getElementById('missionList');
+  list.innerHTML = '';
+  missions.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'menu-card';
+    const done = state.missions[m.id] > 0;
+    if (done) card.classList.add('complete');
+    const earned = state.missions[m.id] || 0;
+    card.innerHTML = `
+      <div class="op-no">OPERATION ${m.no}</div>
+      <div class="op-title">${m.title}</div>
+      <div class="op-desc">${m.desc}</div>
+      <div class="op-xp">${m.id === 'debrief' ? 'GENERATE ID' : `${earned} / ${m.xp} XP EARNED`}</div>
+    `;
+    card.onclick = () => { m.setup(); goToPage(m.page); };
+    list.appendChild(card);
+  });
+  updateXP();
+}
+
+function completeMission(id, earnedXp) {
+  if (earnedXp !== undefined) {
+    // remove previous award if any, then re-award
+    state.xp -= state.missions[id] || 0;
+    state.missions[id] = earnedXp;
+    state.xp += earnedXp;
+  }
+  updateXP();
+  buildMenu();
+  goToPage('page-menu');
+}
+
+// ============ CIPHERS ============
+function buildCiphers() {
+  ['A','B','C'].forEach(k => {
+    const input = document.getElementById('cipher' + k);
+    const fb = document.getElementById('fb' + k);
+    if (state.ciphers[k]) {
+      input.value = ({A:'MANCHESTER', B:'EDINBURGH', C:'BATH'})[k];
+      input.disabled = true;
+      fb.className = 'answer-feedback correct';
+      fb.textContent = '✓ DECRYPTED';
+    } else {
+      input.value = '';
+      input.disabled = false;
+      fb.className = 'answer-feedback';
+      fb.textContent = '';
+    }
+  });
+  updateCipherDone();
+}
+
+function checkCipher(key, expected, inputId, fbId) {
+  const v = document.getElementById(inputId).value.trim().toUpperCase();
+  const fb = document.getElementById(fbId);
+  if (v === expected) {
+    state.ciphers[key] = true;
+    fb.className = 'answer-feedback correct';
+    fb.textContent = '✓ CORRECT — ' + expected + ' verified.';
+    document.getElementById(inputId).disabled = true;
+    save();
+    updateCipherDone();
+  } else {
+    fb.className = 'answer-feedback wrong';
+    fb.textContent = '✗ INCORRECT. Try again.';
+  }
+}
+
+function updateCipherDone() {
+  const allDone = state.ciphers.A && state.ciphers.B && state.ciphers.C;
+  document.getElementById('cipherDone').disabled = !allDone;
+  if (allDone && state.missions.ciphers === 0) {
+    document.getElementById('cipherDone').onclick = () => completeMission('ciphers', 200);
+  }
+}
+
+// ============ QUIZ ============
+const quizBank = [
+  { q: "Manchester is nicknamed 'Cottonopolis' because it was the world's first industrial centre for what?",
+    opts: ["Cotton textile manufacturing", "Wool weaving", "Silk imports", "Linen exports"], correct: 0,
+    fact: "By 1850, Manchester processed nearly half of all cotton imported into Britain. The Industrial Revolution effectively began in this region." },
+  { q: "Edinburgh Castle sits on Castle Rock — formed by what geological event?",
+    opts: ["A glacial moraine", "An extinct volcano's plug", "A meteorite impact", "An earthquake fault"], correct: 1,
+    fact: "Castle Rock is the eroded plug of a volcano that erupted around 340 million years ago. The volcano itself is long gone — only the hard core remains." },
+  { q: "Which medieval street in York is said to have inspired Diagon Alley in Harry Potter?",
+    opts: ["Stonegate", "Coppergate", "The Shambles", "Petergate"], correct: 2,
+    fact: "The Shambles dates to the 14th century. The overhanging timber-framed buildings nearly meet in the middle — original design feature, not decoration." },
+  { q: "The Roman name for Bath was Aquae Sulis. Sulis was a:",
+    opts: ["Roman emperor", "Celtic goddess of the spring", "Type of mineral", "Local king"], correct: 1,
+    fact: "The Romans adopted the local Celtic deity and merged her with Minerva. Pilgrims came from across the empire to throw curse tablets into the sacred spring." },
+  { q: "How deep is Loch Ness at its deepest point?",
+    opts: ["About 50 metres", "About 100 metres", "About 230 metres", "About 500 metres"], correct: 2,
+    fact: "Loch Ness contains more freshwater than every lake in England and Wales combined. The maximum depth is 230m — deeper than the North Sea in most places." },
+  { q: "Oxford University's first colleges were founded around what year?",
+    opts: ["1500", "1700", "1300", "Around 1096 — over 900 years ago"], correct: 3,
+    fact: "Teaching at Oxford is documented from 1096, making it the second-oldest continuously operating university in the world (after Bologna)." },
+  { q: "Which of these London Underground lines actually runs through Paddington (your London base)?",
+    opts: ["Northern line", "Bakerloo, Circle, District, Hammersmith & City, Elizabeth", "Victoria line only", "Piccadilly line only"], correct: 1,
+    fact: "Paddington is one of London's biggest interchange hubs — 5 Tube lines plus mainline trains to Wales, Bath, Oxford, and Heathrow." },
+  { q: "The Scottish flag (the Saltire) is one of the oldest national flags still in use. It dates back to roughly:",
+    opts: ["1700s", "Around 832 AD — nearly 1,200 years ago", "1500s", "1900s"], correct: 1,
+    fact: "Legend says King Óengus II saw a white X-shaped cross of cloud (St Andrew's cross) before victory in battle in 832 AD. The flag has been used ever since." },
+  { q: "Manchester is associated with several major bands. Which of these is NOT from Manchester?",
+    opts: ["Oasis", "The Smiths", "Joy Division", "The Beatles"], correct: 3,
+    fact: "The Beatles were from Liverpool, ~35 miles west. Manchester gave the world Oasis, The Smiths, Joy Division, The Stone Roses, and the entire 'Madchester' scene." },
+  { q: "Why do British people drive on the LEFT side of the road?",
+    opts: ["A random royal decree", "Tradition from sword-wielding horseback riders keeping their sword-arm toward danger", "To be different from Europe", "Because the steering wheel was originally on the right"], correct: 1,
+    fact: "Knights rode on the left so their right (sword) arm faced oncoming strangers. The custom was formalized for horse-drawn coaches in 1773 and stuck." }
+];
+let quizIdx = 0, quizScore = 0;
+
+function buildQuiz() {
+  quizIdx = 0; quizScore = 0;
+  document.getElementById('quizNav').style.display = 'none';
+  document.getElementById('quizRetryBtn').style.display = 'none';
+  renderQuizQ();
+}
+
+function renderQuizQ() {
+  const c = document.getElementById('quizContainer');
+  if (quizIdx >= quizBank.length) {
+    const passed = quizScore >= 8;
+    const earned = passed ? 200 : Math.floor(quizScore * 20);
+    c.innerHTML = `
+      <div class="quiz-card" style="text-align:center;">
+        <h2 style="margin-bottom:12px;">Assessment Complete</h2>
+        <p class="small">Score: <strong>${quizScore} / ${quizBank.length}</strong></p>
+        <p style="margin-top:14px; font-family: 'Special Elite', monospace; font-size: 22px; color: ${passed ? 'var(--green-classified)' : 'var(--crimson)'};">
+          ${passed ? `+${earned} XP awarded` : `+${earned} XP (partial credit)`}
+        </p>
+        <p style="margin-top:10px; font-style: italic;">
+          ${passed ? 'Full mission credit. Intelligence rating: cleared.' : 'Threshold was 8/10 for full credit. Retake for full XP.'}
+        </p>
+      </div>
+    `;
+    completeMission('quiz', earned);
+    document.getElementById('quizNav').style.display = 'flex';
+    if (!passed) document.getElementById('quizRetryBtn').style.display = 'inline-block';
+    return;
+  }
+  const q = quizBank[quizIdx];
+  c.innerHTML = `
+    <div class="quiz-card">
+      <div class="quiz-q-num">QUESTION ${String(quizIdx + 1).padStart(2, '0')} / ${quizBank.length}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-opts" id="quizOpts">
+        ${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-fact" id="qf">▸ ${q.fact}</div>
+    </div>
+  `;
+}
+
+function answerQuiz(i) {
+  const q = quizBank[quizIdx];
+  const opts = document.querySelectorAll('#quizOpts .quiz-opt');
+  opts.forEach((o, idx) => {
+    o.disabled = true;
+    if (idx === q.correct) o.classList.add('correct');
+    else if (idx === i) o.classList.add('wrong');
+  });
+  if (i === q.correct) quizScore++;
+  document.getElementById('qf').classList.add('show');
+  setTimeout(() => { quizIdx++; renderQuizQ(); }, 2400);
+}
+
+function resetQuiz() { buildQuiz(); }
+
+// ============ MATH ============
+const mathProblems = [
+  {
+    ctx: "You exchange Rp 5,000,000 to British pounds at the airport.",
+    q: "How many pounds (£) do you get? Use £1 = Rp 21,000.",
+    unit: "£",
+    answer: 238.10, tolerance: 0.05,
+    explain: "5,000,000 ÷ 21,000 ≈ £238.10"
+  },
+  {
+    ctx: "Your London hotel costs £170 per night. You stay 4 nights.",
+    q: "What's the total cost in Indonesian rupiah (IDR)?",
+    unit: "Rp",
+    answer: 14280000, tolerance: 0.05,
+    explain: "170 × 4 = £680. Then 680 × 21,000 = Rp 14,280,000."
+  },
+  {
+    ctx: "Your Emirates flight EK 017 departs Dubai at 07:25 GST (GMT+4) and is airborne for 7 hours 35 minutes.",
+    q: "What time does it land at Manchester in BST (GMT+1)? Give 24-hour format (e.g. 1430).",
+    unit: "BST",
+    answer: 1200, tolerance: 0.05,
+    explain: "07:25 + 7h35m = 15:00 GST. Manchester is 3 hours behind Dubai in summer, so 15:00 − 3:00 = 12:00 BST."
+  },
+  {
+    ctx: "It's 7:00 PM (19:00) in London when you call home.",
+    q: "What time is it in Jakarta? Give 24-hour format (e.g. 0130 for 1:30 AM).",
+    unit: "WIB",
+    answer: 100, tolerance: 0.05,
+    explain: "Jakarta (GMT+7) is 6 hours ahead of UK summer time (GMT+1). 19:00 + 6 = 01:00 the next day."
+  },
+  {
+    ctx: "The TransPennine Express train from Manchester to Edinburgh is direct, ~3h 13m, covering roughly 350 km.",
+    q: "What's the average speed of the train, in km/h? (Round to nearest whole number.)",
+    unit: "km/h",
+    answer: 109, tolerance: 0.07,
+    explain: "3h 13m = 3.217 hours. 350 ÷ 3.217 ≈ 109 km/h."
+  }
+];
+
+function buildMath() {
+  const c = document.getElementById('mathContainer');
+  c.innerHTML = '';
+  mathProblems.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'math-problem';
+    div.innerHTML = `
+      <div class="quiz-q-num">PROBLEM ${String(i + 1).padStart(2, '0')}</div>
+      <div class="math-context">${p.ctx}</div>
+      <div class="math-q">${p.q}</div>
+      <div class="math-answer-row">
+        <input type="number" step="any" id="math${i}" placeholder="Numerical answer">
+        <span class="math-unit">${p.unit}</span>
+        <button onclick="checkMath(${i})">Submit</button>
+      </div>
+      <div class="answer-feedback" id="mfb${i}"></div>
+      <details><summary>▸ Show working (after submitting)</summary><p class="small" id="mexp${i}" style="display:none;">${p.explain}</p></details>
+    `;
+    c.appendChild(div);
+  });
+  updateMathDone();
+}
+
+let mathCorrect = new Set();
+function checkMath(i) {
+  const p = mathProblems[i];
+  const v = parseFloat(document.getElementById('math' + i).value);
+  const fb = document.getElementById('mfb' + i);
+  const exp = document.getElementById('mexp' + i);
+  if (isNaN(v)) {
+    fb.className = 'answer-feedback wrong';
+    fb.textContent = 'Enter a number.';
+    return;
+  }
+  const diff = Math.abs(v - p.answer) / p.answer;
+  if (diff <= p.tolerance) {
+    fb.className = 'answer-feedback correct';
+    fb.textContent = `✓ CORRECT — within tolerance.`;
+    mathCorrect.add(i);
+    exp.style.display = 'block';
+  } else {
+    fb.className = 'answer-feedback wrong';
+    fb.textContent = `✗ Off target. Tap "Show working" to see method, then try again.`;
+    exp.style.display = 'block';
+  }
+  updateMathDone();
+}
+
+function updateMathDone() {
+  const btn = document.getElementById('mathDone');
+  if (mathCorrect.size === mathProblems.length) {
+    btn.disabled = false;
+    btn.onclick = () => completeMission('math', 150);
+  } else if (mathCorrect.size >= 3) {
+    btn.disabled = false;
+    btn.textContent = `Submit Partial (${mathCorrect.size * 30} XP) →`;
+    btn.onclick = () => completeMission('math', mathCorrect.size * 30);
+  } else {
+    btn.disabled = true;
+    btn.textContent = `Need 3+ correct (${mathCorrect.size}/5)`;
+  }
+}
+
+// ============ ROUTE ============
+const routeCities = [
+  { id: 'jakarta', name: 'Jakarta', code: 'CGK' },
+  { id: 'dubai', name: 'Dubai (transit)', code: 'DXB' },
+  { id: 'manchester', name: 'Manchester', code: 'MAN' },
+  { id: 'york', name: 'York (day trip)', code: 'YOK' },
+  { id: 'edinburgh', name: 'Edinburgh', code: 'EDI' },
+  { id: 'highlands', name: 'Scottish Highlands', code: 'HLD' },
+  { id: 'london', name: 'London', code: 'LON' },
+  { id: 'oxford', name: 'Oxford (day trip)', code: 'OXF' },
+  { id: 'bath', name: 'Bath (day trip)', code: 'BTH' }
+];
+const correctRoute = ['jakarta','dubai','manchester','york','edinburgh','highlands','london','oxford','bath'];
+let routePlaced = [];
+
+function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
+
+function buildRoute() {
+  routePlaced = [];
+  const ch = document.getElementById('routeChoices');
+  const od = document.getElementById('routeOrder');
+  od.innerHTML = '<p class="small" style="padding:14px; text-align:center;">Click cities in left column to build sequence here.</p>';
+  ch.innerHTML = '';
+  shuffle(routeCities).forEach(c => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:10px 14px; margin:6px 0; border:1px solid var(--ink); background: white; cursor:pointer; display: flex; justify-content: space-between; align-items: center; font-family: JetBrains Mono, monospace; font-size: 13px;';
+    item.dataset.id = c.id;
+    item.innerHTML = `<span>${c.name}</span><span style="color: var(--ink-faded); font-size: 10px;">${c.code}</span>`;
+    item.onclick = () => placeRoute(c.id);
+    ch.appendChild(item);
+  });
+  document.getElementById('routeDone').disabled = true;
+}
+
+function placeRoute(id) {
+  if (routePlaced.includes(id)) return;
+  routePlaced.push(id);
+  document.querySelector(`#routeChoices [data-id="${id}"]`).style.opacity = '0.3';
+  document.querySelector(`#routeChoices [data-id="${id}"]`).style.pointerEvents = 'none';
+  renderRoutePlaced();
+  if (routePlaced.length === routeCities.length) document.getElementById('routeDone').disabled = false;
+}
+
+function renderRoutePlaced() {
+  const od = document.getElementById('routeOrder');
+  od.innerHTML = '';
+  routePlaced.forEach((id, idx) => {
+    const c = routeCities.find(x => x.id === id);
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:10px 14px; margin:6px 0; border:1px solid var(--green-classified); background: rgba(45, 80, 40, 0.08); display: flex; gap: 10px; align-items: center; font-family: JetBrains Mono, monospace; font-size: 13px;';
+    item.innerHTML = `<span style="background:var(--ink); color:var(--paper); width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">${idx+1}</span><span style="flex:1;">${c.name}</span><span style="color: var(--ink-faded); font-size: 10px;">${c.code}</span>`;
+    od.appendChild(item);
+  });
+}
+
+function checkRoute() {
+  const correct = routePlaced.every((id, idx) => id === correctRoute[idx]);
+  if (correct) {
+    completeMission('route', 100);
+  } else {
+    alert('Sequence incorrect. Review: Jakarta is home base. You fly WEST. Manchester before Edinburgh, then return to Manchester briefly, then south to London. Day trips fit into where you actually stay overnight.');
+    buildRoute();
+  }
+}
+
+// ============ SCAVENGER HUNT ============
+const huntData = {
+  Manchester: {
+    label: 'MAN',
+    items: [
+      { id: 'mcr1', label: 'Manchester bee symbol', note: 'On bollards, buildings, manhole covers — the worker bee is the city emblem', pts: 5 },
+      { id: 'mcr2', label: 'Old Trafford stadium', note: 'Photograph the exterior or pitch during tour', pts: 10 },
+      { id: 'mcr3', label: 'Stevenson Square street art', note: 'Northern Quarter — find a mural that wasn\'t there last month', pts: 10 },
+      { id: 'mcr4', label: 'A canal boat at Castlefield', note: 'The basin is a working canal with narrowboats', pts: 5 },
+      { id: 'mcr5', label: 'Affleck\'s Palace', note: 'Multi-floor vintage market — go inside', pts: 10 },
+      { id: 'mcr6', label: 'A steam engine at Science & Industry Museum', note: 'Watch a demo if you can', pts: 10 },
+      { id: 'mcr7', label: 'Etihad Stadium tunnel', note: 'During the City stadium tour', pts: 10 },
+      { id: 'mcr8', label: 'Statue of Alan Turing', note: 'Sackville Gardens — codebreaker, gay icon, Manchester legend', pts: 15 },
+      { id: 'mcr9', label: 'A graduation gown photo', note: 'Your own graduation ceremony — special moment', pts: 25 },
+      { id: 'mcr10', label: 'Eat a curry on the Curry Mile', note: 'Rusholme — over 70 South Asian restaurants in 800 metres', pts: 15 }
+    ]
+  },
+  York: {
+    label: 'YOK',
+    items: [
+      { id: 'yk1', label: 'York Minster from outside', note: 'Gothic giant — took 250 years to build', pts: 5 },
+      { id: 'yk2', label: 'Walk part of the medieval city walls', note: 'Almost 2 miles complete — best view of the Minster', pts: 10 },
+      { id: 'yk3', label: 'The Shambles street', note: 'Inspired Diagon Alley — buildings nearly touch overhead', pts: 5 },
+      { id: 'yk4', label: 'Cat statue on a building', note: 'York has stone cats on rooftops — locals know why, mostly', pts: 15 },
+      { id: 'yk5', label: 'View from Clifford\'s Tower', note: 'Climb to the top for panoramic city view', pts: 10 },
+      { id: 'yk6', label: 'A train at the National Railway Museum', note: 'Mallard, Flying Scotsman, royal carriages — free entry', pts: 10 }
+    ]
+  },
+  Edinburgh: {
+    label: 'EDI',
+    items: [
+      { id: 'ed1', label: 'Edinburgh Castle from below', note: 'Best angle: Princes Street Gardens looking up', pts: 5 },
+      { id: 'ed2', label: 'Someone playing bagpipes on Royal Mile', note: 'Tip them if you photograph', pts: 5 },
+      { id: 'ed3', label: 'A tartan pattern in a shop window', note: 'Identify the clan if the label says', pts: 5 },
+      { id: 'ed4', label: 'Greyfriars Bobby statue', note: 'Loyal dog who guarded his owner\'s grave for 14 years', pts: 10 },
+      { id: 'ed5', label: 'A "close" — a narrow alley off the Royal Mile', note: 'Old Town is a maze of these', pts: 5 },
+      { id: 'ed6', label: 'View from Arthur\'s Seat summit', note: 'Hike up — 360° panorama is the reward', pts: 20 },
+      { id: 'ed7', label: 'The One O\'Clock Gun at the Castle', note: 'Fires daily at 1 PM except Sunday — time it', pts: 15 },
+      { id: 'ed8', label: 'A haggis dish on a menu (eaten or not)', note: 'Scotland\'s national dish — sheep stomach, oats, spice', pts: 10 }
+    ]
+  },
+  Highlands: {
+    label: 'HLD',
+    items: [
+      { id: 'hl1', label: 'Loch Ness — water or signpost', note: 'The lake itself, or any Nessie merchandise', pts: 10 },
+      { id: 'hl2', label: 'A Highland cow ("hairy coo")', note: 'Ginger, shaggy, friendly-looking. Photograph one', pts: 20 },
+      { id: 'hl3', label: 'Glencoe — the actual valley', note: 'One of the most filmed landscapes in cinema (Bond, Potter)', pts: 10 },
+      { id: 'hl4', label: 'Heather (purple flowering shrub)', note: 'July is peak bloom — the hills turn purple', pts: 10 },
+      { id: 'hl5', label: 'A whisky distillery (any)', note: 'Tomatin, Dalwhinnie, or one en route — name the brand', pts: 15 },
+      { id: 'hl6', label: 'Snow on a mountain top in summer', note: 'Cairngorms can hold snow into August', pts: 25 },
+      { id: 'hl7', label: 'A castle ruin', note: 'Urquhart on Loch Ness counts — many along the route', pts: 10 }
+    ]
+  },
+  London: {
+    label: 'LON',
+    items: [
+      { id: 'ln1', label: 'A red double-decker bus', note: 'Iconic — but try to get an old Routemaster (route 15)', pts: 5 },
+      { id: 'ln2', label: 'A black London cab', note: 'Distinctive Hackney carriage shape', pts: 5 },
+      { id: 'ln3', label: 'A Beefeater (Yeoman Warder)', note: 'Tower of London — they all have 22+ years military service', pts: 10 },
+      { id: 'ln4', label: 'Big Ben (Elizabeth Tower)', note: 'Photograph the clock face', pts: 5 },
+      { id: 'ln5', label: 'A Tube roundel sign', note: 'The red circle and blue bar is design royalty (Edward Johnston, 1916)', pts: 5 },
+      { id: 'ln6', label: 'A telephone box (red)', note: 'Becoming rare — K6 model is the classic', pts: 5 },
+      { id: 'ln7', label: 'Tower Bridge raised for a ship', note: 'Schedule online — happens a few times daily', pts: 25 },
+      { id: 'ln8', label: 'A pigeon in Trafalgar Square', note: 'Used to be banned — they\'re back', pts: 5 },
+      { id: 'ln9', label: 'Hogwarts Castle model at WB Studios', note: 'The 1:24 scale model used for exterior shots', pts: 15 },
+      { id: 'ln10', label: 'Drink a butterbeer', note: 'At the Backlot Cafe during the Harry Potter tour', pts: 10 },
+      { id: 'ln11', label: 'Eat curry on Brick Lane', note: 'Pick any — bargain with the door touts', pts: 10 }
+    ]
+  },
+  Oxford: {
+    label: 'OXF',
+    items: [
+      { id: 'ox1', label: 'A punt on the River Cherwell', note: 'The shallow flat-bottomed boats — go on one if budget allows', pts: 10 },
+      { id: 'ox2', label: 'Radcliffe Camera', note: 'The famous round library building', pts: 5 },
+      { id: 'ox3', label: 'Bridge of Sighs (Hertford Bridge)', note: 'Imitation of the Venice original', pts: 5 },
+      { id: 'ox4', label: 'A college gargoyle', note: 'Magdalen and New College have great ones — some are modern', pts: 10 },
+      { id: 'ox5', label: 'Christ Church Great Hall', note: 'Used as the model for Harry Potter\'s Hogwarts hall', pts: 15 },
+      { id: 'ox6', label: 'A student in academic gown', note: 'Worn for exams ("sub fusc") and formal events', pts: 10 }
+    ]
+  },
+  Bath: {
+    label: 'BTH',
+    items: [
+      { id: 'bt1', label: 'The Great Bath (green water)', note: 'Inside the Roman Baths — yes, it really is that colour', pts: 5 },
+      { id: 'bt2', label: 'Royal Crescent', note: 'The 30-house Georgian curved terrace — UNESCO World Heritage', pts: 5 },
+      { id: 'bt3', label: 'Pulteney Bridge', note: 'One of only four bridges in the world with shops across its full span', pts: 10 },
+      { id: 'bt4', label: 'Eat a Bath Bun or Sally Lunn bun', note: 'Sally Lunn\'s is the oldest house in Bath, c.1482', pts: 10 },
+      { id: 'bt5', label: 'The Pump Room', note: 'You can taste the spa water from the original spring — warning: it\'s gross', pts: 15 },
+      { id: 'bt6', label: 'The Circus (the round Georgian terrace)', note: 'Three matching curved terraces forming a circle', pts: 10 }
+    ]
+  },
+  Bonus: {
+    label: 'BNS',
+    items: [
+      { id: 'bn1', label: 'Eat fish and chips', note: 'Any city. Best with mushy peas and curry sauce', pts: 10 },
+      { id: 'bn2', label: 'Eat a scone with clotted cream', note: 'Cream first or jam first? Debate is real', pts: 10 },
+      { id: 'bn3', label: 'Hear someone say "cheers" not for drinking', note: 'It means thanks. Listen for it everywhere', pts: 5 },
+      { id: 'bn4', label: 'A pub sign with a funny name', note: 'The Slug & Lettuce, The Cock Inn, The Drunken Duck...', pts: 5 },
+      { id: 'bn5', label: 'Collect a 50p coin', note: 'Different commemorative designs — try to find an unusual one', pts: 10 },
+      { id: 'bn6', label: 'A train station that\'s also a cafe/shop hub', note: 'Like Manchester Piccadilly or London Paddington', pts: 5 },
+      { id: 'bn7', label: 'A castle other than Edinburgh\'s', note: 'Tower of London, Stirling, Urquhart — multiple counted separately', pts: 10 },
+      { id: 'bn8', label: 'A rainbow during a sun shower', note: 'British summer specialty: rain + sun simultaneously', pts: 15 },
+      { id: 'bn9', label: 'See a London/Manchester sunset after 9 PM', note: 'July sunsets are very late this far north', pts: 5 }
+    ]
+  }
+};
+let huntActiveCity = 'Manchester';
+
+function buildHunt() {
+  // ensure state.hunt has entries
+  for (const city in huntData) {
+    if (!state.hunt[city]) state.hunt[city] = {};
+  }
+  renderTabs();
+  renderHuntContent();
+  updateHuntStats();
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('cityTabs');
+  tabs.innerHTML = '';
+  for (const city in huntData) {
+    const total = huntData[city].items.length;
+    const done = Object.keys(state.hunt[city] || {}).filter(k => state.hunt[city][k]).length;
+    const btn = document.createElement('button');
+    btn.className = 'city-tab' + (city === huntActiveCity ? ' active' : '');
+    btn.innerHTML = `${city} <span class="tab-count">${done}/${total}</span>`;
+    btn.onclick = () => { huntActiveCity = city; renderTabs(); renderHuntContent(); updateHuntStats(); };
+    tabs.appendChild(btn);
+  }
+}
+
+function renderHuntContent() {
+  const c = document.getElementById('huntContent');
+  const city = huntActiveCity;
+  const items = huntData[city].items;
+  c.innerHTML = `<div class="item-list">${items.map(it => {
+    const done = (state.hunt[city] || {})[it.id];
+    return `<div class="hunt-item ${done ? 'done' : ''}" onclick="toggleHunt('${city}','${it.id}')">
+      <div class="hunt-check"></div>
+      <div class="item-body">
+        <div class="item-label">${it.label}</div>
+        <div class="item-note">${it.note}</div>
+      </div>
+      <div class="item-points">+${it.pts} XP</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function toggleHunt(city, id) {
+  state.hunt[city] = state.hunt[city] || {};
+  state.hunt[city][id] = !state.hunt[city][id];
+  renderTabs();
+  renderHuntContent();
+  updateHuntStats();
+  // recompute hunt XP and award up to 350
+  let totalPts = 0;
+  for (const c in huntData) {
+    for (const it of huntData[c].items) {
+      if ((state.hunt[c] || {})[it.id]) totalPts += it.pts;
+    }
+  }
+  const earned = Math.min(350, Math.floor(totalPts * 350 / getMaxHuntPts()));
+  state.xp -= state.missions.hunt || 0;
+  state.missions.hunt = earned;
+  state.xp += earned;
+  updateXP();
+  save();
+}
+
+function getMaxHuntPts() {
+  let m = 0;
+  for (const c in huntData) for (const it of huntData[c].items) m += it.pts;
+  return m;
+}
+
+function updateHuntStats() {
+  const city = huntActiveCity;
+  const items = huntData[city].items;
+  const done = items.filter(it => (state.hunt[city] || {})[it.id]);
+  const cityXp = done.reduce((s, it) => s + it.pts, 0);
+  document.getElementById('cityXp').textContent = cityXp;
+  document.getElementById('cityFound').textContent = `${done.length} / ${items.length}`;
+  let total = 0;
+  for (const c in huntData) {
+    for (const it of huntData[c].items) {
+      if ((state.hunt[c] || {})[it.id]) total += it.pts;
+    }
+  }
+  document.getElementById('huntTotal').textContent = total;
+}
+
+// ============ ID CARD ============
+function buildIdCard() {
+  document.getElementById('idName').textContent = state.codeName || 'OPERATIVE';
+  document.getElementById('idXp').textContent = `${state.xp} / 1000`;
+  const rank = getRank(state.xp);
+  document.getElementById('idRank').textContent = rank;
+
+  const summary = document.getElementById('opsSummary');
+  summary.innerHTML = missions.filter(m => m.id !== 'debrief').map(m => `
+    <div class="ops-summary-card">
+      <div class="label">${m.title}</div>
+      <div class="value">${state.missions[m.id] || 0}<span style="font-size:12px; color: var(--ink-faded);"> / ${m.xp}</span></div>
+    </div>
+  `).join('');
+
+  // commendations
+  const com = [];
+  if (state.missions.ciphers === 200) com.push({ name: 'CRYPTOGRAPHER', desc: 'Cracked all three ciphers without retry.' });
+  if (state.missions.quiz === 200) com.push({ name: 'INTELLIGENCE OFFICER', desc: 'Passed assessment with 8 or higher.' });
+  if (state.missions.math === 150) com.push({ name: 'NAVIGATOR', desc: 'Completed all five field calculations.' });
+  if (state.missions.route === 100) com.push({ name: 'CARTOGRAPHER', desc: 'Reconstructed full travel sequence.' });
+  if (state.missions.hunt >= 200) com.push({ name: 'FIELD OPERATIVE', desc: 'Collected substantial field evidence during travel.' });
+  if (state.missions.hunt >= 300) com.push({ name: 'MASTER OF FIELDWORK', desc: 'Near-total scavenger completion.' });
+  if (state.xp >= 950) com.push({ name: 'DECORATED EXPLORER', desc: 'Achieved Master Explorer rank.' });
+
+  const commDiv = document.getElementById('commendations');
+  if (com.length) {
+    commDiv.innerHTML = `<h3>Commendations</h3>` + com.map(c => `
+      <div style="border: 1px solid var(--gold); padding: 12px 16px; margin: 8px 0; background: rgba(184,134,46,0.08); display: flex; align-items: center; gap: 14px;">
+        <span style="background:var(--gold); color:var(--ink); padding:6px 10px; font-family: 'JetBrains Mono', monospace; font-size:11px; font-weight:700; letter-spacing:2px;">★</span>
+        <div>
+          <div style="font-family: 'Special Elite', monospace; font-size:15px;">${c.name}</div>
+          <div class="small">${c.desc}</div>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    commDiv.innerHTML = '<p class="small">No commendations yet. Complete missions to unlock awards.</p>';
+  }
+}
+
+// ============ INIT ============
+load();
+if (state.codeName) {
+  buildMenu();
+  goToPage('page-menu');
+}
+updateXP();
+
+document.getElementById('codeName').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') beginOperation();
+});
+</script>
+
+</body>
+</html>
